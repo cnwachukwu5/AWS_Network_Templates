@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create a route table and associate it with a subnet.
+
+Parameters:
+  DestinationCidrBlock:
+    Type: String
+    Description: The DestinationCidrBlock for the local route
+
+Resources:
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      Tags:
+        - Key: Name
+          Value: MyRouteTable
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !ImportValue "${AWS::StackName}-MyInternetGatewayId" # Importing Internet Gateway ID from another stack
+  LocalRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: !Ref DestinationCidrBlock     
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !ImportValue "${AWS::StackName}-MySubnet1Id" # Importing Public Subnet ID from another stack
+      RouteTableId: !Ref MyRouteTable
+Outputs:
+  MyRouteTableId:
+    Description: The ID of the created Route Table
+    Value: !Ref MyRouteTable
+    Export:
+      Name: !Sub "${AWS::StackName}-MyRouteTableId"
+
+  

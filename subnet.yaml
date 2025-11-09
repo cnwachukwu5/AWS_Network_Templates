@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create 2 subnets in the AZ (public and private).
+
+Parameters:
+  MySubnet1Cidr:
+    Type: String
+    Description: The CidrBlock of the subnet1 (public subnet)
+    Default:  10.0.0.0/20
+
+  MySubnet2Cidr:
+    Type: String
+    Description: The CidrBlock of the subnet1 (private subnet)
+    Default:  10.0.1.0/20
+
+  SubnetAZ:
+    Type: String
+    Description: The Availability Zone to launch the subnets in
+    Default: !Select [ 0, !GetAZs '' ]
+
+Resources:
+  MySubnet1: # Public Subnet
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      CidrBlock: !Ref MySubnet1Cidr
+      AvailabilityZone: !Ref SubnetAZ
+      MapPublicIpOnLaunch: true # Automatically assign public IPs to instances launched in this subnet
+      Tags:
+        - Key: Name
+          Value: MySubnet1
+  MySubnet2: # Private Subnet
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      CidrBlock: !Ref MySubnet2Cidr
+      AvailabilityZone: !Ref SubnetAZ
+      Tags:
+        - Key: Name
+          Value: MySubnet2 
+Outputs:
+  MySubnet1Id:
+    Description: The ID of the created Public Subnet
+    Value: !Ref MySubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}-MySubnet1Id"
+  MySubnet2Id:
+    Description: The ID of the created Private Subnet
+    Value: !Ref MySubnet2
+    Export:
+      Name: !Sub "${AWS::StackName}-MySubnet2Id"

@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create a VPC.
+Parameters:
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+  InstanceTenancy:
+    Type: String
+    Default: default
+    AllowedValues:
+      - default
+      - dedicated
+    Description: The instance tenancy option for the VPC
+
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true # Support DNS resolution in the VPC
+      EnableDnsHostnames: true # Enable DNS hostnames for instances launched in the VPC
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: MyVPC
+Outputs:
+  VPCId:
+    Description: The ID of the created VPC
+    Value: !Ref MyVPC
+    Export:
+      Name: !Sub "${AWS::StackName}-MyVPCId"

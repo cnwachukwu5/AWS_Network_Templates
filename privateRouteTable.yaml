@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create private route table and associate it with a private subnet.
+
+Parameters:
+  DestinationCidrBlock:
+    Type: String
+    Description: The DestinationCidrBlock for the local route
+
+Resources:
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable
+  PrivateLocalRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: !Ref DestinationCidrBlock
+      
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !ImportValue "${AWS::StackName}-MySubnet2Id" # Importing Private Subnet ID from another stack
+      RouteTableId: !Ref PrivateRouteTable
