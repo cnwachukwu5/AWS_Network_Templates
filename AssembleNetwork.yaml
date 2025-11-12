@@ -1,42 +1,43 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation Template to create a VPC with subnets, route tables, and an internet gateway.
 
-VPCNestedStack:
-  Type: AWS::CloudFormation::Stack
-  Properties:
-    TemplateURL:  # Update with your S3 bucket URL
-    Parameters:
-      VpcCidr: 10.0.0.0/16
-      InstanceTenancy: default
+Resources:
+  VPCNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./vpc.yaml 
+      Parameters:
+        VpcCidr: 10.0.0.0/16
+        InstanceTenancy: default
 
-SubnetNestedStack:
-  Type: AWS::CloudFormation::Stack
-  Properties:
-    TemplateURL: # Update with your S3 bucket URL
-    Parameters:
-      MySubnet1Cidr: 10.0.0.0/20
-      MySubnet2Cidr: 10.0.1.0/20
-      SubnetAZ: !Select [ 0, !GetAZs '' ]
-    DependsOn: VPCNestedStack
+  SubnetNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./subnet.yaml 
+      Parameters:
+        MySubnet1Cidr: 10.0.0.0/20
+        MySubnet2Cidr: 10.0.1.0/20
+        SubnetAZ: !Select [ 0, !GetAZs '' ]
+      DependsOn: VPCNestedStack
 
-InternetGatewayNestedStack:
-  Type: AWS::CloudFormation::Stack
-  Properties:
-    TemplateURL: # Update with your S3 bucket URL
-    DependsOn: VPCNestedStack
+  InternetGatewayNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./internetGateway.yaml 
+      DependsOn: VPCNestedStack
 
-PublicRouteTableNestedStack:
-  Type: AWS::CloudFormation::Stack
-  Properties:
-    TemplateURL:  # Update with your S3 bucket URL
-    Parameters:
-      DestinationCidrBlock: 10.0.0.0/20
-    DependsOn: SubnetNestedStack, InternetGatewayNestedStack
+  PublicRouteTableNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./publicRouteTable.yaml 
+      Parameters:
+        DestinationCidrBlock: 10.0.0.0/20
+      DependsOn: SubnetNestedStack, InternetGatewayNestedStack
 
-PrivateRouteTableNestedStack:
-  Type: AWS::CloudFormation::Stack
-  Properties:
-    TemplateURL: # Update with your S3 bucket URL
-    Parameters:
-      DestinationCidrBlock: 10.0.1.0/20
-    DependsOn: SubnetNestedStack
+  PrivateRouteTableNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./privateRouteTable.yaml 
+      Parameters:
+        DestinationCidrBlock: 10.0.1.0/20
+      DependsOn: SubnetNestedStack
