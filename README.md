@@ -11,4 +11,8 @@ Update AssembleNetwork.yaml with preferred cidr block for vpc, subnets, instance
 Defaults will apply as stated in the top level template if not overridden.
 
 You can validate the templates using the command below:
-aws cloudformation validate-template --template-body file://filename.yaml --region <your_region>
+```
+aws cloudformation validate-template 
+	--template-body file://filename.yaml 
+	--region <your_region>
+```
