@@ -4,7 +4,7 @@ Description: AWS CloudFormation Template to create a VPC with subnets, route tab
 VPCNestedStack:
   Type: AWS::CloudFormation::Stack
   Properties:
-    TemplateURL: https://s3.amazonaws.com/mybucket/vpc.yaml # Update with your S3 bucket URL
+    TemplateURL: nested/vpc.yaml # Update with your S3 bucket URL
     Parameters:
       VpcCidr: 10.0.0.0/16
       InstanceTenancy: default
@@ -12,7 +12,7 @@ VPCNestedStack:
 SubnetNestedStack:
   Type: AWS::CloudFormation::Stack
   Properties:
-    TemplateURL: https://s3.amazonaws.com/mybucket/subnet.yaml # Update with your S3 bucket URL
+    TemplateURL: nested/subnet.yaml # Update with your S3 bucket URL
     Parameters:
       MySubnet1Cidr: 10.0.0.0/20
       MySubnet2Cidr: 10.0.1.0/20
@@ -22,13 +22,13 @@ SubnetNestedStack:
 InternetGatewayNestedStack:
   Type: AWS::CloudFormation::Stack
   Properties:
-    TemplateURL: https://s3.amazonaws.com/mybucket/internetGateway.yaml # Update with your S3 bucket URL
+    TemplateURL: nested/internetGateway.yaml # Update with your S3 bucket URL
     DependsOn: VPCNestedStack
 
 PublicRouteTableNestedStack:
   Type: AWS::CloudFormation::Stack
   Properties:
-    TemplateURL: https://s3.amazonaws.com/mybucket/publicRouteTable.yaml # Update with your S3 bucket URL
+    TemplateURL: nested/publicRouteTable.yaml # Update with your S3 bucket URL
     Parameters:
       DestinationCidrBlock: 10.0.0.0/20
     DependsOn: SubnetNestedStack, InternetGatewayNestedStack
@@ -36,8 +36,7 @@ PublicRouteTableNestedStack:
 PrivateRouteTableNestedStack:
   Type: AWS::CloudFormation::Stack
   Properties:
-    TemplateURL: https://s3.amazonaws.com/mybucket/privateRouteTable.yaml # Update with your S3 bucket URL
+    TemplateURL: nested/privateRouteTable.yaml # Update with your S3 bucket URL
     Parameters:
       DestinationCidrBlock: 10.0.1.0/20
     DependsOn: SubnetNestedStack
-    
