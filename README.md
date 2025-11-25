@@ -38,3 +38,10 @@ aws cloudformation deploy \
   --profile <profile with right permissions> \
   --region <your_region>
 ```
+
+In the event that stack create/update fails, you can run this command to see the list of events and the cause of the failure
+```
+aws cloudformation describe-stack-events \
+ --stack-name <stack_name> \
+ --profile <profile with right permissions>
+```

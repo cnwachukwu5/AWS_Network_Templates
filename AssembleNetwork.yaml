@@ -15,29 +15,42 @@ Resources:
     Properties:
       TemplateURL: ./subnet.yaml 
       Parameters:
-        MySubnet1Cidr: 10.0.0.0/20
-        MySubnet2Cidr: 10.0.1.0/20
+        MySubnet1Cidr: 10.0.0.0/24
+        MySubnet2Cidr: 10.0.1.0/24
         SubnetAZ: !Select [ 0, !GetAZs '' ]
-      DependsOn: VPCNestedStack
+        VpcId: !GetAtt VPCNestedStack.Outputs.VpcId # Importing VPC ID from another stack
+    DependsOn: 
+      - VPCNestedStack
 
   InternetGatewayNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: ./internetGateway.yaml 
-      DependsOn: VPCNestedStack
+      TemplateURL: ./internetGateway.yaml
+      Parameters:
+        VpcId: !GetAtt VPCNestedStack.Outputs.VpcId # Importing VPC ID from another stack 
+    DependsOn: 
+      - VPCNestedStack
 
   PublicRouteTableNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./publicRouteTable.yaml 
       Parameters:
-        DestinationCidrBlock: 10.0.0.0/20
-      DependsOn: SubnetNestedStack, InternetGatewayNestedStack
+        DestinationCidrBlock: 10.0.0.0/24
+        SubnetId: !GetAtt SubnetNestedStack.Outputs.MySubnet1Id
+        VpcId: !GetAtt VPCNestedStack.Outputs.VpcId
+        GatewayId: !GetAtt InternetGatewayNestedStack.Outputs.MyInternetGatewayId
+    DependsOn: 
+      - SubnetNestedStack
+      - InternetGatewayNestedStack
 
   PrivateRouteTableNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./privateRouteTable.yaml 
       Parameters:
-        DestinationCidrBlock: 10.0.1.0/20
-      DependsOn: SubnetNestedStack
+        DestinationCidrBlock: 10.0.1.0/24
+        SubnetId: !GetAtt SubnetNestedStack.Outputs.MySubnet2Id
+        VpcId: !GetAtt VPCNestedStack.Outputs.VpcId
+    DependsOn: 
+      - SubnetNestedStack

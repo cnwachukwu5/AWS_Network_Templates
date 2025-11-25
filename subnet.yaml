@@ -5,23 +5,26 @@ Parameters:
   MySubnet1Cidr:
     Type: String
     Description: The CidrBlock of the subnet1 (public subnet)
-    Default:  10.0.0.0/20
+    Default:  "10.0.0.0/24"
 
   MySubnet2Cidr:
     Type: String
     Description: The CidrBlock of the subnet1 (private subnet)
-    Default:  10.0.1.0/20
+    Default:  "10.0.1.0/24"
 
   SubnetAZ:
     Type: String
     Description: The Availability Zone to launch the subnets in
-    Default: !Select [ 0, !GetAZs '' ]
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: The ID of the VPC where the subnets will be created
 
 Resources:
   MySubnet1: # Public Subnet
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      VpcId: !Ref VpcId # Importing VPC ID from another stack
       CidrBlock: !Ref MySubnet1Cidr
       AvailabilityZone: !Ref SubnetAZ
       MapPublicIpOnLaunch: true # Automatically assign public IPs to instances launched in this subnet
@@ -31,7 +34,7 @@ Resources:
   MySubnet2: # Private Subnet
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      VpcId: !Ref VpcId # Importing VPC ID from another stack
       CidrBlock: !Ref MySubnet2Cidr
       AvailabilityZone: !Ref SubnetAZ
       Tags:
@@ -41,10 +44,10 @@ Outputs:
   MySubnet1Id:
     Description: The ID of the created Public Subnet
     Value: !Ref MySubnet1
-    Export:
-      Name: !Sub "${AWS::StackName}-MySubnet1Id"
+    #Export:
+      #Name: !Sub "${AWS::StackName}-MySubnet1Id"
   MySubnet2Id:
     Description: The ID of the created Private Subnet
     Value: !Ref MySubnet2
-    Export:
-      Name: !Sub "${AWS::StackName}-MySubnet2Id"
+    #Export:
+      #Name: !Sub "${AWS::StackName}-MySubnet2Id"

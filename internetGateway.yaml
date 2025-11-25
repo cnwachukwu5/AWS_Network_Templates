@@ -1,5 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation Template to create an internet Gateway and attach it to the VPC.
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: The ID of the VPC to attach the Internet Gateway to
+
 Resources:
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -10,11 +16,11 @@ Resources:
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      VpcId: !Ref VpcId # Importing VPC ID from another stack
       InternetGatewayId: !Ref MyInternetGateway
 Outputs:
   MyInternetGatewayId:
     Description: The ID of the created Internet Gateway
     Value: !Ref MyInternetGateway
-    Export:
-      Name: !Sub "${AWS::StackName}-MyInternetGatewayId"  
+    #Export:
+      #Name: !Sub "${AWS::StackName}-MyInternetGatewayId"  

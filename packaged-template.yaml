@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create a VPC with subnets, route tables,
+  and an internet gateway.
+Resources:
+  VPCNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/0a1a921e195455f8f7a8b4ca47d2f08f.template
+      Parameters:
+        VpcCidr: 10.0.0.0/16
+        InstanceTenancy: default
+  SubnetNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/924b58c8a9297cb4b4a91da2f11120e4.template
+      Parameters:
+        MySubnet1Cidr: 10.0.0.0/24
+        MySubnet2Cidr: 10.0.1.0/24
+        SubnetAZ:
+          Fn::Select:
+          - 0
+          - Fn::GetAZs: ''
+        VpcId:
+          Fn::GetAtt:
+          - VPCNestedStack
+          - Outputs.VpcId
+    DependsOn:
+    - VPCNestedStack
+  InternetGatewayNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/00d6328ac8a9307f41efbf5889e08fde.template
+      Parameters:
+        VpcId:
+          Fn::GetAtt:
+          - VPCNestedStack
+          - Outputs.VpcId
+    DependsOn:
+    - VPCNestedStack
+  PublicRouteTableNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/de1aaa832d0bd7dd9146a15bdd5eb3af.template
+      Parameters:
+        DestinationCidrBlock: 10.0.0.0/24
+        SubnetId:
+          Fn::GetAtt:
+          - SubnetNestedStack
+          - Outputs.MySubnet1Id
+        VpcId:
+          Fn::GetAtt:
+          - VPCNestedStack
+          - Outputs.VpcId
+        GatewayId:
+          Fn::GetAtt:
+          - InternetGatewayNestedStack
+          - Outputs.MyInternetGatewayId
+    DependsOn:
+    - SubnetNestedStack
+    - InternetGatewayNestedStack
+  PrivateRouteTableNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/58001ddf483e252a102a0107c2726c28.template
+      Parameters:
+        DestinationCidrBlock: 10.0.1.0/24
+        SubnetId:
+          Fn::GetAtt:
+          - SubnetNestedStack
+          - Outputs.MySubnet2Id
+        VpcId:
+          Fn::GetAtt:
+          - VPCNestedStack
+          - Outputs.VpcId
+    DependsOn:
+    - SubnetNestedStack

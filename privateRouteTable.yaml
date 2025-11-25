@@ -5,23 +5,26 @@ Parameters:
   DestinationCidrBlock:
     Type: String
     Description: The DestinationCidrBlock for the local route
+  
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: The ID of the VPC where the route table will be created
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: The ID of the Private Subnet to associate with the route table
 
 Resources:
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !ImportValue "${AWS::StackName}-MyVPCId" # Importing VPC ID from another stack
+      VpcId: !Ref VpcId # Importing VPC ID from another stack
       Tags:
         - Key: Name
           Value: PrivateRouteTable
-  PrivateLocalRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: !Ref DestinationCidrBlock
       
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !ImportValue "${AWS::StackName}-MySubnet2Id" # Importing Private Subnet ID from another stack
+      SubnetId: !Ref SubnetId # Importing Private Subnet ID from another stack
       RouteTableId: !Ref PrivateRouteTable

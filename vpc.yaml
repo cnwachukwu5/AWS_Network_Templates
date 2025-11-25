@@ -25,8 +25,8 @@ Resources:
         - Key: Name
           Value: MyVPC
 Outputs:
-  VPCId:
+  VpcId:
     Description: The ID of the created VPC
     Value: !Ref MyVPC
-    Export:
-      Name: !Sub "${AWS::StackName}-MyVPCId"
+    #Export:
+      #Name: !Sub "${AWS::StackName}-MyVPCId"
