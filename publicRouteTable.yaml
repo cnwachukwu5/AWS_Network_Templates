@@ -41,7 +41,5 @@ Outputs:
   MyRouteTableId:
     Description: The ID of the created Route Table
     Value: !Ref MyRouteTable
-    #Export:
-      #Name: !Sub "${AWS::StackName}-MyRouteTableId"
 
   

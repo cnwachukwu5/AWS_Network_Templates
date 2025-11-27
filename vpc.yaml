@@ -28,5 +28,4 @@ Outputs:
   VpcId:
     Description: The ID of the created VPC
     Value: !Ref MyVPC
-    #Export:
-      #Name: !Sub "${AWS::StackName}-MyVPCId"
+    

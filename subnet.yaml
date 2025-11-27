@@ -44,10 +44,8 @@ Outputs:
   MySubnet1Id:
     Description: The ID of the created Public Subnet
     Value: !Ref MySubnet1
-    #Export:
-      #Name: !Sub "${AWS::StackName}-MySubnet1Id"
+    
   MySubnet2Id:
     Description: The ID of the created Private Subnet
     Value: !Ref MySubnet2
-    #Export:
-      #Name: !Sub "${AWS::StackName}-MySubnet2Id"
+    

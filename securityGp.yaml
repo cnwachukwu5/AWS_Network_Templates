@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create a Security Group.
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: The ID of the VPC where the Security Group will be created
+Resources:
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and HTTP access
+      VpcId: !Ref VpcId # Importing VPC ID from another stack
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/24 # Allow SSH from within the VPC
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0 # Allow HTTP from anywhere
+        - IpProtocol: icmp
+          FromPort: 0
+          ToPort: -1
+          CidrIp: 10.0.0.0/24 # Allow ICMP from within the VPC
+      Tags:
+        - Key: Name
+          Value: MySecurityGroup 
+Outputs:
+  MySecurityGroupId:
+    Description: The ID of the created Security Group
+    Value: !Ref MySecurityGroup

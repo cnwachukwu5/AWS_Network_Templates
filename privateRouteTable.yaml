@@ -28,3 +28,9 @@ Resources:
     Properties:
       SubnetId: !Ref SubnetId # Importing Private Subnet ID from another stack
       RouteTableId: !Ref PrivateRouteTable
+
+Outputs:
+  PrivateRouteTableId:
+    Description: The ID of the created Private Route Table
+    Value: !Ref PrivateRouteTable
+    

@@ -61,7 +61,7 @@ Resources:
   PrivateRouteTableNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/58001ddf483e252a102a0107c2726c28.template
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/9634e8aa2913a2eba4d164b6267730fb.template
       Parameters:
         DestinationCidrBlock: 10.0.1.0/24
         SubnetId:
@@ -74,3 +74,71 @@ Resources:
           - Outputs.VpcId
     DependsOn:
     - SubnetNestedStack
+  SecurityGroupNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.us-east-1.amazonaws.com/cyjava2006/6b87ecc2e7460a7d6003eb0252aeeaab.template
+      Parameters:
+        VpcId:
+          Fn::GetAtt:
+          - VPCNestedStack
+          - Outputs.VpcId
+    DependsOn:
+    - VPCNestedStack
+Outputs:
+  VpcId:
+    Description: The ID of the created VPC
+    Value:
+      Fn::GetAtt:
+      - VPCNestedStack
+      - Outputs.VpcId
+    Export:
+      Name: NetworkStack-VpcId
+  PublicSubnetId:
+    Description: The ID of the created Public Subnet
+    Value:
+      Fn::GetAtt:
+      - SubnetNestedStack
+      - Outputs.MySubnet1Id
+    Export:
+      Name: NetworkStack-PublicSubnetId
+  PrivateSubnetId:
+    Description: The ID of the created Private Subnet
+    Value:
+      Fn::GetAtt:
+      - SubnetNestedStack
+      - Outputs.MySubnet2Id
+    Export:
+      Name: NetworkStack-PrivateSubnetId
+  InternetGatewayId:
+    Description: The ID of the created Internet Gateway
+    Value:
+      Fn::GetAtt:
+      - InternetGatewayNestedStack
+      - Outputs.MyInternetGatewayId
+    Export:
+      Name: NetworkStack-InternetGatewayId
+  PublicRouteTableId:
+    Description: The ID of the created Public Route Table
+    Value:
+      Fn::GetAtt:
+      - PublicRouteTableNestedStack
+      - Outputs.MyRouteTableId
+    Export:
+      Name: NetworkStack-PublicRouteTableId
+  PrivateRouteTableId:
+    Description: The ID of the created Private Route Table
+    Value:
+      Fn::GetAtt:
+      - PrivateRouteTableNestedStack
+      - Outputs.PrivateRouteTableId
+    Export:
+      Name: NetworkStack-PrivateRouteTableId
+  SecurityGroupId:
+    Description: The ID of the created Security Group
+    Value:
+      Fn::GetAtt:
+      - SecurityGroupNestedStack
+      - Outputs.MySecurityGroupId
+    Export:
+      Name: NetworkStack-MySecurityGroupId

@@ -54,3 +54,49 @@ Resources:
         VpcId: !GetAtt VPCNestedStack.Outputs.VpcId
     DependsOn: 
       - SubnetNestedStack
+
+  SecurityGroupNestedStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./securityGp.yaml 
+      Parameters:
+        VpcId: !GetAtt VPCNestedStack.Outputs.VpcId
+    DependsOn: 
+      - VPCNestedStack
+
+Outputs:
+  VpcId:
+    Description: The ID of the created VPC
+    Value: !GetAtt VPCNestedStack.Outputs.VpcId
+    Export:
+      Name: NetworkStack-VpcId
+  PublicSubnetId:
+    Description: The ID of the created Public Subnet
+    Value: !GetAtt SubnetNestedStack.Outputs.MySubnet1Id
+    Export:
+      Name: NetworkStack-PublicSubnetId
+  PrivateSubnetId:
+    Description: The ID of the created Private Subnet
+    Value: !GetAtt SubnetNestedStack.Outputs.MySubnet2Id
+    Export:
+      Name: NetworkStack-PrivateSubnetId
+  InternetGatewayId:
+    Description: The ID of the created Internet Gateway 
+    Value: !GetAtt InternetGatewayNestedStack.Outputs.MyInternetGatewayId
+    Export:
+      Name: NetworkStack-InternetGatewayId
+  PublicRouteTableId:
+    Description: The ID of the created Public Route Table 
+    Value: !GetAtt PublicRouteTableNestedStack.Outputs.MyRouteTableId
+    Export:
+      Name: NetworkStack-PublicRouteTableId
+  PrivateRouteTableId:
+    Description: The ID of the created Private Route Table  
+    Value: !GetAtt PrivateRouteTableNestedStack.Outputs.PrivateRouteTableId
+    Export:
+      Name: NetworkStack-PrivateRouteTableId
+  SecurityGroupId:
+    Description: The ID of the created Security Group 
+    Value: !GetAtt SecurityGroupNestedStack.Outputs.MySecurityGroupId
+    Export:
+      Name: NetworkStack-MySecurityGroupId  

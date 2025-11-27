@@ -45,3 +45,30 @@ aws cloudformation describe-stack-events \
  --stack-name <stack_name> \
  --profile <profile with right permissions>
 ```
+
+When you update a stack and want to view the changes before applying same to update the stack, you need to run the create-change-set command 
+```
+aws cloudformation create-change-set \
+  --stack-name <stack_name> \
+  --change-set-name <The name for the change stack> \
+  --template-body file://<file name generated from CloudFormation package command> \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --profile <profile with right permissions>
+  --include-nested-stacks
+```
+
+Execute this command to view the changes in the change stack 
+```
+aws cloudformation describe-change-set \
+ --change-set-name <The name for the change stack> \
+ --stack-name <stack_name> \
+ --profile <profile with right permissions>
+```
+
+If all changes to be made are acceptable, run the execute-change-set command to create or update the stack 
+```
+aws cloudformation execute-change-set \
+> --stack-name <stack_name> \
+> --change-set-name <The name for the change stack> \
+> --profile <profile with right permissions>
+```
